@@ -1,3 +1,14 @@
+<?php 
+session_start();
+
+include("includes/database.php");
+
+if(isset($_SESSION["email"])==false) {
+    //user has not logged in redirect to login page
+    header("location:login.php");
+    exit();
+}
+?>
 <!doctype html>
 <html>
     <?php include("includes/head.php"); ?>
