@@ -1,9 +1,9 @@
 <?php
     $user       = "user";
-    $password   = "password";
+    $dbpassword   = "password";
     $host       = "localhost";
     $database   = "datastore";
-    $connection = mysqli_connect($host, $user, $password, $database);
+    $connection = mysqli_connect($host, $user, $dbpassword, $database);
     
     if(!$connection) {
         echo "database error";
