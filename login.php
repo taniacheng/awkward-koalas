@@ -1,4 +1,5 @@
 <?php
+    session_start();
     //get database connection
     include("includes/database.php");
     
@@ -14,10 +15,9 @@
              $query = "SELECT * FROM accounts WHERE username='$user_email'";
         }
         
-        $password = $_POST["password"];
-        echo $query;
+        $pass = $_POST["pass"];
         // construct query with email variable
-        // $query = "SELECT * FROM accounts WHERE username='$user_email'";
+        // $query = "SELECT * FROM accounts WHERE username='$email'";
         
         //create array to store errors
         $errors = array();
@@ -28,12 +28,16 @@
         //check the result
         if($userdata->num_rows > 0) {
             $user = $userdata->fetch_assoc(); //converts result into associative array
-            echo $user["password"];
-            if(password_verify($password,$user["password"])===false) {
+            if(password_verify($pass,$user["password"])===false) {
                 $errors["account"] = "Incorrect password or email";
             }
             else {
                 $message = "You are now logged in";
+                
+                $username = $user["username"];
+                $_SESSION["username"] = $username;
+                $email = $user["email"];
+                $_SESSION["email"] = $email;
             }
         }
         else {
@@ -50,6 +54,7 @@ include("includes/head.php");
 ?>
     
     <body>
+        <?php include("includes/navigation.php"); ?>
         <div class="container">
             <div class="row">
                 <div class="col-md-4 col-md-offset-4">
@@ -62,9 +67,10 @@ include("includes/head.php");
                         <!--end form group-->
                         <div class="form-group">
                             <label for="password">Your Password</label>
-                            <input class="form-control" type="password" id="password" name="password" placeholder="Your password">
+                            <input class="form-control" type="password" id="password" name="pass" placeholder="Your password">
                         </div>
                         <!--end form group-->
+                        <p>Don't have an account? <a href="register.php">Sign Up</a></p>
                         <div class="text-center">
                             <button type="submit" name="submit" value="login" class="btn btn-info">Login</button>
                         </div>
