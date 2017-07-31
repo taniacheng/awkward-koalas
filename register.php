@@ -35,7 +35,7 @@ if($_SERVER["REQUEST_METHOD"]=="POST") {
   //if no errors, write data to database
   if(count($errors)==0) {
     //hash the password
-    $password = password_hash($password,PASSWORD_DEFAULT);
+    $password = password_hash($password1,PASSWORD_DEFAULT);
     //create a query string
     $query = "INSERT 
               INTO accounts (username,email,password,status,created)
@@ -43,7 +43,8 @@ if($_SERVER["REQUEST_METHOD"]=="POST") {
               ('$username','$email','$password',1,NOW())";
     $result = $connection->query($query);
     if($result==true) {
-      echo "Account created";
+      //echo "Account created";
+      $message = "Account successfully created";
     }
     else {
       if($connection->errno == 1062) {
@@ -69,7 +70,7 @@ include("includes/head.php");
 ?>
  
 <body>
-
+  <?php include("includes/navigation.php"); ?>
   <div class="container">
     <div class="row">
       <div class="col-md-4 col-md-offset-4">
@@ -120,9 +121,15 @@ include("includes/head.php");
             </span>
           </div>
           <!--Submit-->
+          <p>Already have an account? <a href="login.php">Sign In</a></p>
           <div class="text-center">
             <button type="submit" class="btn btn-default">Register</button>
           </div>
+          <?php 
+            if($message) {
+              echo "<div class=\"aler alert-success\"> $message</div>";
+            }
+          ?>
           </form>
         <!--end registration form-->
       
