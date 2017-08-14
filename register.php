@@ -37,24 +37,34 @@ if($_SERVER["REQUEST_METHOD"]=="POST") {
     //hash the password
     $password = password_hash($password1,PASSWORD_DEFAULT);
     //create a query string
-    $query = "INSERT 
-              INTO accounts (username,email,password,status,created)
+    //$query = "INSERT 
+            // INTO accounts (username,email,password,status,created)
+            // VALUES
+            //('$username','$email','$password',1,NOW())";
+    // The best way to create safe query is to use parameterised query
+    $query = "INSERT
+              INTO accounts
+              (username,email,password,status,created)
               VALUES
-              ('$username','$email','$password',1,NOW())";
-    $result = $connection->query($query);
-    if($result==true) {
-      //echo "Account created";
+              (?,?,?,1,NOW())";
+    $statement = $connection->prepare($query);
+    $statement->bind_param("sss",$username,$email,$password);
+    
+    // $result = $connection->query($query);
+    $statement->execute();
+    
+    if($statement->affected_rows > 0) {
       $message = "Account successfully created";
     }
     else {
       if($connection->errno == 1062) {
-        $message = $connection->error;
+        $error_message = $connection->error;
         //check if error contains 'username'
-        if(strstr($message,"username")) {
+        if(strstr($error_message,"username")) {
           $errors["username"] = "Username already exists";
         }
         //check if error contains 'email'
-        if(strstr($message,"email")) {
+        if(strstr($error_message,"email")) {
           $errors["email"] = "Email address already exists";
         }
       }
@@ -127,7 +137,7 @@ include("includes/head.php");
           </div>
           <?php 
             if($message) {
-              echo "<div class=\"aler alert-success\"> $message</div>";
+              echo "<div class=\"alert alert-success\"> $message</div>";
             }
           ?>
           </form>

@@ -8,14 +8,14 @@
         //check if the user entered an email address
         if(filter_var($user_email,FILTER_VALIDATE_EMAIL)) {
             //if true, user entered an email
-             $query = "SELECT * FROM accounts WHERE email='$user_email'";
+             $query = "SELECT * FROM accounts WHERE email=?";
         }
         else {
             //if false, user entered a username
-             $query = "SELECT * FROM accounts WHERE username='$user_email'";
+             $query = "SELECT * FROM accounts WHERE username=?";
         }
         
-        $pass = $_POST["pass"];
+        $pass = $_POST["pass"]; // "pass" comes from the name attribute in the login form below
         // construct query with email variable
         // $query = "SELECT * FROM accounts WHERE username='$email'";
         
@@ -23,7 +23,14 @@
         $errors = array();
         
         //run query
-        $userdata = $connection->query($query);
+        $statement = $connection->prepare($query);
+        $statement->bind_param("s",$user_email);
+        $statement->execute();
+        
+        //get the result of the query
+        $userdata = $statement->get_result();
+        
+        //$userdata = $connection->query($query);
         
         //check the result
         if($userdata->num_rows > 0) {
@@ -34,8 +41,13 @@
             else {
                 $message = "You are now logged in";
                 
+                //create account id as a sesson variable
+                $account_id = $user['id'];
+                $_SESSION['id'] = $account_id;
+                //create account username as a session variable
                 $username = $user["username"];
                 $_SESSION["username"] = $username;
+                //create account email as a session variable
                 $email = $user["email"];
                 $_SESSION["email"] = $email;
             }

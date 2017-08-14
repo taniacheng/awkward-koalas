@@ -1,15 +1,5 @@
 <?php 
-include("database.php");
-//query to create an account
-$username   = "jane88";
-$email      = "jane88@gmail.com";
-$password   = password_hash("password", PASSWORD_DEFAULT);
-$account_query = "INSERT INTO accounts (username,email,password,status,created) VALUES('$username','$email','$password',1, NOW())";
-//run the query
-$result = $connection->query($account_query);
-if(!$result) {
-    echo "Account creation failed";
-}
+include("includes/database.php");
 ?>
 
 <!doctype html>

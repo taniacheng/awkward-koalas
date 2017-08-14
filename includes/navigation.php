@@ -23,6 +23,8 @@
                 <li><a href="register.php">Sign Up</a></li>
                 <li><a href="login.php">Sign In</a></li>
                 <li><a href="account.php">My Account</a></li>
+                <li><a href="logout.php">Sign Out</a></li>
+                <li><a href="phpmyadmin" target="_blank">Database</a></li>
             </ul>
         </div>
         <!--end collapse-->
