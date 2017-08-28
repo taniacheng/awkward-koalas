@@ -71,7 +71,7 @@ include("includes/head.php");
             <div class="row">
                 <div class="col-md-4 col-md-offset-4">
                     <form id="login-form" action="login.php" method="post">
-                        <h1>Login to your account</h1>
+                        <h2>Login to your account</h2>
                         <div class="form-group">
                             <label for="email">Email Address or Username</label>
                             <input  class="form-control" type="text" id="email" name="user" placeholder="you@email.com or username">

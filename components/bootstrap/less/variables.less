@@ -4,6 +4,9 @@
 
 
 //== Colors
+//## My Colours
+@my-purple: #681ACD;
+@my-yellow: #FADF59;
 //
 //## Gray and brand colors for use across Bootstrap.
 
@@ -14,7 +17,7 @@
 @gray-light:             lighten(@gray-base, 46.7%); // #777
 @gray-lighter:           lighten(@gray-base, 93.5%); // #eee
 
-@brand-primary:         darken(#428bca, 6.5%); // #337ab7
+@brand-primary:         #4709ba; //darken(#428bca, 6.5%); // #337ab7
 @brand-success:         #5cb85c;
 @brand-info:            #5bc0de;
 @brand-warning:         #f0ad4e;
@@ -364,16 +367,16 @@
 @navbar-padding-vertical:          ((@navbar-height - @line-height-computed) / 2);
 @navbar-collapse-max-height:       340px;
 
-@navbar-default-color:             #777;
-@navbar-default-bg:                #f8f8f8;
+@navbar-default-color:             lighten(@my-purple,50%); //#777;
+@navbar-default-bg:                lighten(@brand-primary,30%); //#f8f8f8;
 @navbar-default-border:            darken(@navbar-default-bg, 6.5%);
 
 // Navbar links
-@navbar-default-link-color:                #777;
+@navbar-default-link-color:                lighten(@brand-primary,70%); //#777;
 @navbar-default-link-hover-color:          #333;
-@navbar-default-link-hover-bg:             transparent;
-@navbar-default-link-active-color:         #555;
-@navbar-default-link-active-bg:            darken(@navbar-default-bg, 6.5%);
+@navbar-default-link-hover-bg:             @my-yellow;
+@navbar-default-link-active-color:         #333; //#555;
+@navbar-default-link-active-bg:            @my-yellow; //darken(@navbar-default-bg, 6.5%);
 @navbar-default-link-disabled-color:       #ccc;
 @navbar-default-link-disabled-bg:          transparent;
 
