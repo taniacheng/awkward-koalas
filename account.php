@@ -211,7 +211,26 @@ if($countries_result->num_rows > 0){
   }
 }
 
+//set default country
+$default_country_code = "AU";
+if($country) {
+    $default_country_code = $country;
+}
+
+//Get data for countries sub divisions
+$regions_query = "SELECT sub_id,
+                  country_code,
+                  sub_region_code,
+                  sub_region_name
+                  FROM countries_subdivisions
+                  WHERE country_code=?";
+$region_statement = $connection->prepare($regions_query);
+$region_statement->bind_param("s",$default_country_code);
+$region_statement->execute();
+$region_result = $region_statement->get_result();
+
 ?>
+
 <!doctype html>
 <html>
   <?php include("includes/head.php"); ?>
@@ -333,8 +352,28 @@ if($countries_result->num_rows > 0){
               <!--State-->
               <div class="col-md-5">
                 <div class="form-group">
-                  <label for="suburb">State</label>
-                  <input  type="text" class="form-control" id="state" name="state" placeholder="New South Wales" value="<?php echo $state; ?>">
+                  <label for="state">State</label>
+                  <!--<input  type="text" class="form-control" id="state" name="state" placeholder="New South Wales" value="<?php echo $state; ?>">-->
+                  <select name="state" class="form-control" id="state" placeholder="State or province">
+                      <?php
+                        //<option value="default-state">Default</option>
+                        if($region_result->num_rows > 0) {
+                            while($region = $region_result->fetch_assoc()) {
+                                $id = $region["sub_id"];
+                                $code = $region["sub_region_code"];
+                                $country_code = $region["country_code"];
+                                $name = $region["sub_region_name"];
+                                if($code == $state) {
+                                    $selected = "selected";
+                                }
+                                else {
+                                    $selected = "";
+                                }
+                                echo "<option $selected value=\"$code\"></option>";
+                            }
+                        }
+                      ?>
+                  </select>
                 </div>
               </div>
             </div>
@@ -342,7 +381,7 @@ if($countries_result->num_rows > 0){
               <label for="country">Country</label>
               <select id="country" class="form-control" name="country">
                 <?php
-                  $default_country_code = "AU";
+                  //$default_country_code = "AU";
                   if($country){
                     $default_country_code = $country;
                   }
@@ -394,5 +433,7 @@ if($countries_result->num_rows > 0){
         </div>
       </form>
     </div>
+    <!--add states.js file-->
+    <script src="js/states.js"></script>
   </body>
 </html>
