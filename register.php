@@ -153,7 +153,7 @@ include("includes/head.php");
               ?>
             </span>
           </div>
-          <p>Have an account? <a href="login.php">Sign In</a></p>
+          <p>Have an account? <a href="login2.php">Sign In</a></p>
           <div class="text-center">
             <button type="submit" class="btn btn-default">Register</button>
           </div>

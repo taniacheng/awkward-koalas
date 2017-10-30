@@ -67,7 +67,7 @@
             //recieves users email addy or username
             //checks if it matches with a record in database (similar to login.php)
             //return true if successful
-            $query = "SELECT id,username,email,password 
+            $query = "SELECT id,username,email,password,profile_image 
                     FROM accounts
                     WHERE username=?
                     OR email=?";
@@ -79,6 +79,7 @@
                 $user = $result -> fetch_assoc();
                 $id = $user["id"];
                 $username = $user["username"];
+                $profile_image = $user["profile_image"];
                 $email = $user["email"];
                 $stored_hash = $user["password"];
                 
@@ -88,6 +89,7 @@
                     $_SESSION["id"] = $id;
                     $_SESSION["username"] = $username;
                     $_SESSION["email"] = $email;
+                    $_SESSION["profile_image"] = $profile_image;
                     return true;
                 }
                 else {

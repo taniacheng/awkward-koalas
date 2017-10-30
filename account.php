@@ -61,11 +61,68 @@ if($_SERVER["REQUEST_METHOD"]=="POST"){
       $updatepassword=true;
     }
   }
+  //============= PROFILE IMAGE ===============//
+  //check if there is an image uploaded
+  if( $_FILES["profile-image"]["tmp_name"] ) {
+    //create an array to collect image errors
+    $image_errors = array();
+    
+    //get the temp name of file
+    $uploaded_file = $_FILES["profile-image"]["tmp_name"];
+    
+    //check for exif data (theoretically non image files do not have exif data)
+    $img_type = exif_imagetype($uploaded_file);
+    if($img_type > 3) {
+      array_push( $image_errors, "only jpg, png or gif can be used" );
+    }
+    
+    //get the file dimensions (image width and height)
+    $img_dim = getimagesize($uploaded_file);
+    if($img_dim === false) {
+      array_push( $image_errors, "file is not an image" );
+    }
+    
+    //check image file size (in MB)
+    $img_size = filesize($uploaded_file);
+    if( $img_size > 1048576*2 ) {
+      array_push( $image_errors, "max size is 2MB" );
+    }
+    
+    //check if file name starts with a dot
+    if( strpos( $_FILES["profile-image"]["name"], ".", 0 ) === 0 ) {
+      array_push( $image_errors, "illegal file type" );
+    }
+    
+    //if there are image errors
+    if( count($image_errors) > 0 ) {
+      $errors["image"] = implode($image_errors," and ");
+    }
+    //if there are no errors
+    else {
+      $uploaded_name = $_FILES["profile-image"]["name"];
+      $filename = pathinfo($uploaded_name,PATHINFO_FILENAME);
+      $fileextension = strtolower( pathinfo($uploaded_name,PATHINFO_EXTENSION) );
+      $newfile = uniqid("image_",true) . "." . $fileextension;
+      //move uploaded file to destination directory
+      move_uploaded_file($_FILES["profile-image"]["tmp_name"],"profile_images/".$newfile);
+      
+      //insert image name into database
+      $profile_image_query = "UPDATE accounts SET profile_image=? WHERE id=?";
+      $statement = $connection -> prepare( $profile_image_query );
+      $statement -> bind_param("si",$newfile,$account_id);
+      if( $statement -> execute() === false ) {
+        $errors["profile"] = "error updating profile image"; 
+      }
+    }
+  }
+  
+  
   //if there are no errors
   if(count($errors)==0){
-    //if $updating
+    //set updating to false, to make the form populated from database, after update has been carried out
     $updating = false;
     //update accounts table without updating password
+    //prevent update with password set to blank
     if($updatepassword==false){
       $account_update_query = "UPDATE accounts SET username=?,email=? WHERE id=?";
       $acct_statement = $connection->prepare($account_update_query);
@@ -162,6 +219,7 @@ if($updating==false){
   $user_query = "SELECT 
                 accounts.email AS email,
                 accounts.username AS username,
+                accounts.profile_image AS profile_image,
                 user_details.first_name AS firstname,
                 user_details.last_name AS lastname,
                 user_details.unit_number AS unit,
@@ -189,6 +247,7 @@ if($updating==false){
   //get account details from userdata array
   $username = $userdata["username"];
   $email = $userdata["email"];
+  $profile_image = $userdata["profile_image"];
   //get personal details from userdata array
   $firstname = $userdata["firstname"];
   $lastname = $userdata["lastname"];
@@ -237,10 +296,24 @@ $region_result = $region_statement->get_result();
   <body>
     <?php include("includes/navigation.php"); ?>
     <div class="container">
-      <form id="account-update" action="account.php" method="post">
+      <form id="account-update" action="account.php" method="post" enctype="multipart/form-data">
         <div class="row">
           <div class="col-md-6">
             <h2>Account Details</h2>
+              <div class="form-group">
+                
+                <div class="profile-group">
+                  <img id="profile-preview" src="<?php echo "profile_images/".$profile_image; ?>">
+                  <label for="profile-image" class="btn btn-default profile-btn">
+                    <span class="glyphicon glyphicon-pencil"></span>
+                    <input type="file" id="profile-image" name="profile-image" style="display:none;">
+                  </label>
+                </div>
+                <span id="profile-img-info"></span>
+                <span id="image-errors" class="help-block"></span>
+                
+              </div>
+              
               <?php 
                 // $username = $userdata["username"];
                 if($errors["username"]){
@@ -435,5 +508,6 @@ $region_result = $region_statement->get_result();
     </div>
     <!--add states.js file-->
     <script src="js/states.js"></script>
+    <script src="js/profile.js"></script>
   </body>
 </html>

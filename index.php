@@ -68,6 +68,7 @@ INNER JOIN products_images
 ON products.id=products_images.product_id
 INNER JOIN images
 ON images.image_id = products_images.image_id
+GROUP BY products.id
 ORDER BY products.id ASC
 LIMIT ? OFFSET ?";
 
@@ -241,10 +242,11 @@ $cat_result = $cat_statement->get_result();
                 $price = $row["price"];
                 $image = $row["image_file"];
                 echo "<div class=\"col-md-3\">
+                <h3 class=\"product-name\">$name</h3>
                 <img class=\"img-responsive\" src=\"products_images/$image\">
-                <h3>$name</h3>
                 <h4 class=\"price\">$price</h4>
-                <p>$description</p>
+                <p class=\"product-description\">$description</p>
+                <a href=\"product_detail.php?id=$id\">Details</a>
                 </div>";
                 
                 if($counter==4){

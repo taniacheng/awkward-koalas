@@ -6,7 +6,7 @@ if(!$_SESSION["email"]){
   $navitems = array(
     "Home"=>"index.php",
     "Sign Up"=>"register.php",
-    "Sign In"=>"login.php",
+    "Sign In"=>"login2.php",
     );
 }
 //if user is logged in
@@ -27,11 +27,15 @@ else{
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a href="index.php" class="navbar-brand">Hello</a>
-      <p class="navbar-text">
+      <a href="index.php" class="navbar-brand">PHP MASTER</a>
+      <p class="navbar-text navbar-user">
         <?php
         if($_SESSION["username"]){
           echo "Hello, ". $_SESSION["username"];
+        }
+        if($_SESSION["profile_image"]) {
+          $profile_image = $_SESSION["profile_image"];
+          echo "<img class=\"nav-profile-image\" src=\"profile_images/$profile_image\">";
         }
         ?>
       </p>
@@ -58,4 +62,31 @@ else{
     
     </div>
   </nav>
+  
+  <div class="container">
+    <nav class="navbar navbar-default search-bar">
+      <div class="row">
+        <div class="col-md-6">
+          <form id="search-form" method="get" action="search.php">
+            <div class="input-group">
+              <input class="form-control" type="text" name="search-query" placeholder="Search">
+              <span class="input-group-btn">
+                <button type="submit" name="search-button" class="btn btn-primary">Search</button>
+              </span>
+            </div>
+          </form>
+        </div>
+        <div class="col-md-6 text-right">
+          <a href="shopping_cart.php" class="btn btn-primary">
+            <span class="glyphicon glyphicon-shopping-cart"></span>
+            <span class="badge">2</span>
+          </a>
+          <a href="shopping_cart.php" class="btn btn-primary">
+            <span class="glyphicon glyphicon-heart"></span>
+            <span class="badge">5</span>
+          </a>
+        </div>
+      </div>
+    </nav>
+  </div>
 </header>
