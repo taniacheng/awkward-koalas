@@ -64,7 +64,7 @@ else{
   </nav>
   
   <div class="container">
-    <nav class="navbar navbar-default search-bar">
+    <nav class="navbar navbar-default search-ba">
       <div class="row">
         <div class="col-md-6">
           <form id="search-form" method="get" action="search.php">
