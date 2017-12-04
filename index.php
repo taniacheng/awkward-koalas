@@ -1,5 +1,6 @@
 <?php
 session_start();
+include("autoloader.php");
 include("includes/database.php");
 
 //handle GET request for pages
@@ -267,10 +268,10 @@ $cat_result = $cat_statement->get_result();
             }
             
             ?>
-          </div>
-        </div>
-      </div>
-    </div>
+          </div><!--- end row --->
+        </div><!--- col-md-10 --->
+      </div><!--- end row --->
+    </div><!--- end container --->
     <footer>
       <div class="container">
         <div class="row">

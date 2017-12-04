@@ -30,14 +30,26 @@ function onLogin(submitevent){
       //check if there are any item to add to a list (wish list or shopping list)
       let accountid = response.userid;
       //productid was added by php from the GET request
-      if(addItemsToList(productid,accountid)){
-        console.log("success");
+      
+      if( typeof productid !== 'undefined' ){
+        addItemsToList(productid,accountid);
       }
-      window.setTimeout(function(){window.location.href="account.php"},1500);
+      //if redirect is defined decode the base64 using atob()
+      if( typeof redirect !== 'undefined' ){
+        redirect = atob( redirect );
+      }
+      //if not defined set to a page
+      else{
+        redirect = "account.php";
+      }
+      window.setTimeout(
+        function(){window.location.href=redirect},
+        1500);
     }
     else{
       //login is unsuccessful
       displayAlert("warning","login unsuccessful");
+      //remove the disabled attribute from the login button, so user can try again
       $('button[type="submit"]').removeAttr("disabled");
     }
   });

@@ -38,7 +38,11 @@
 }
 
 .navbar-user {
-    margin: 3px 0 0 0;
+    margin: 0;
+    padding: 0px 15px;
+}
+.nav-image-container {
+  display: inline-block;
 }
 
 .product-quantity{
@@ -56,6 +60,13 @@
 
 #search-form {
     margin-bottom: 0;
+}
+
+footer {
+  height: 250px;
+  margin-top: 50px;
+  background: #4c288e;
+  color: #fff;
 }
 
 /*----------------wishlist section*/
@@ -82,4 +93,21 @@
   to{
     transform: rotate(360deg);
   }
+}
+/*---------shopping cart-------------*/
+.cart-row h3{
+  margin-top:0;
+}
+.cart-row{
+  margin-top:20px;
+}
+.cart-row input[name="quantity"]{
+  max-width:54px;
+}
+.cart-row input[data-type="price"]{
+  max-width:80px;
+}
+.no-border{
+  border:solid transparent;
+  box-shadow: 0px 0px 0px transparent;
 }

@@ -1,10 +1,12 @@
 <?php
 session_start();
+include("autoloader.php");
 include("includes/database.php");
+
 //if user is not logged in, eg no session vars, redirect to login page
 if(isset($_SESSION["email"])==false || isset($_SESSION["id"])==false){
   //user has not logged in redirect to login page
-  header("location:login.php");
+  header("location:login2.php");
   exit();
 }
 
@@ -61,9 +63,9 @@ if($_SERVER["REQUEST_METHOD"]=="POST"){
       $updatepassword=true;
     }
   }
-  //============= PROFILE IMAGE ===============//
+  //===============================================PROFILE IMAGE
   //check if there is an image uploaded
-  if( $_FILES["profile-image"]["tmp_name"] ) {
+  if( $_FILES["profile-image"]["tmp_name"] ){
     //create an array to collect image errors
     $image_errors = array();
     
@@ -72,33 +74,34 @@ if($_SERVER["REQUEST_METHOD"]=="POST"){
     
     //check for exif data (theoretically non image files do not have exif data)
     $img_type = exif_imagetype($uploaded_file);
-    if($img_type > 3) {
-      array_push( $image_errors, "only jpg, png or gif can be used" );
+    if($img_type > 3){
+      array_push( $image_errors, "only jpg,png or gif can be used");
     }
     
     //get the file dimensions (image width and height)
     $img_dim = getimagesize($uploaded_file);
-    if($img_dim === false) {
-      array_push( $image_errors, "file is not an image" );
+    if($img_dim === false){
+      array_push( $image_errors, "file is not an image");
     }
     
     //check image file size (in MB)
     $img_size = filesize($uploaded_file);
-    if( $img_size > 1048576*2 ) {
+    if($img_size > 1048576*2){
       array_push( $image_errors, "max size is 2MB" );
     }
     
     //check if file name starts with a dot
-    if( strpos( $_FILES["profile-image"]["name"], ".", 0 ) === 0 ) {
+    if( strpos($_FILES["profile-image"]["name"],".",0 )===0 ){
       array_push( $image_errors, "illegal file type" );
     }
     
     //if there are image errors
-    if( count($image_errors) > 0 ) {
+    if( count($image_errors) > 0 ){
       $errors["image"] = implode($image_errors," and ");
+      echo "image error";
     }
     //if there are no errors
-    else {
+    else{
       $uploaded_name = $_FILES["profile-image"]["name"];
       $filename = pathinfo($uploaded_name,PATHINFO_FILENAME);
       $fileextension = strtolower( pathinfo($uploaded_name,PATHINFO_EXTENSION) );
@@ -108,18 +111,23 @@ if($_SERVER["REQUEST_METHOD"]=="POST"){
       
       //insert image name into database
       $profile_image_query = "UPDATE accounts SET profile_image=? WHERE id=?";
-      $statement = $connection -> prepare( $profile_image_query );
+      $statement = $connection -> prepare( $profile_image_query  );
       $statement -> bind_param("si",$newfile,$account_id);
-      if( $statement -> execute() === false ) {
-        $errors["profile"] = "error updating profile image"; 
+      if( $statement -> execute() === false ){
+        $errors["profile"] = "error updating profile image";
+        echo "image error";
+      }
+      else{
+        $_SESSION["profile_image"] = $newfile;
       }
     }
   }
   
   
+  
   //if there are no errors
   if(count($errors)==0){
-    //set updating to false, to make the form populated from database, after update has been carried out
+    //set updating to false, to make the form populated from the database, after update has been carried out
     $updating = false;
     //update accounts table without updating password
     //prevent update with password set to blank
@@ -137,29 +145,28 @@ if($_SERVER["REQUEST_METHOD"]=="POST"){
     }
     
     $acct_statement->execute();
+    
     //if update is successful
     if($acct_statement->affected_rows > 0){
       //update session variable for username
       $_SESSION["email"] = $email;
       $_SESSION["username"] = $username;
-      //add message in $success array
+    }
+    //check for errors from database 
+    if($connection->errno===0){
+      $success["account"] = true;
     }
     else{
-      //$errors["update"] = "update failed";
-    }
-    //check errors from database
-    if($connection->errno === 0) {
-        $success["account"] = true;
-    }
-    else {
-        $success["account"] = false;
+       $success["account"] = false;
     }
   }
   else{
+    //if there are errors in the data
+    //set updating to true to make the form populated by user's input
     $updating = true;
   }
   
-  //handle personal details update
+  //handle personal details update get POST data
   $firstname = $_POST["firstname"];
   $lastname = $_POST["lastname"];
   $unit = $_POST["unit"];
@@ -179,7 +186,8 @@ if($_SERVER["REQUEST_METHOD"]=="POST"){
   unit_number,
   street_name,
   suburb,
-  state,country,
+  state,
+  country,
   postcode)
   VALUES (?,?,?,?,?,?,?,?,?,?)
   ON DUPLICATE KEY UPDATE
@@ -213,7 +221,8 @@ if($_SERVER["REQUEST_METHOD"]=="POST"){
 }
 
 if($updating==false){
-  //If user is not updating their data, run the query below
+  //If user is not updating their data, run the query below to populate
+  //form with data from data stored in database
   //Get users details
   $account_id = $_SESSION["id"];
   $user_query = "SELECT 
@@ -269,17 +278,16 @@ if($countries_result->num_rows > 0){
     array_push($countries,$row);
   }
 }
-
 //set default country
 $default_country_code = "AU";
-if($country) {
-    $default_country_code = $country;
+if($country){
+  $default_country_code = $country;
 }
 
-//Get data for countries sub divisions
-$regions_query = "SELECT sub_id,
-                  country_code,
-                  sub_region_code,
+//Get data for states/subdivisions
+$regions_query = "SELECT sub_id, 
+                  country_code, 
+                  sub_region_code, 
                   sub_region_name
                   FROM countries_subdivisions
                   WHERE country_code=?";
@@ -289,7 +297,6 @@ $region_statement->execute();
 $region_result = $region_statement->get_result();
 
 ?>
-
 <!doctype html>
 <html>
   <?php include("includes/head.php"); ?>
@@ -303,7 +310,7 @@ $region_result = $region_statement->get_result();
               <div class="form-group">
                 
                 <div class="profile-group">
-                  <img id="profile-preview" src="<?php echo "profile_images/".$profile_image; ?>">
+                  <img id="profile-preview" src="<?php echo "profile_images/".$profile_image ?>" style="max-width:150px;">
                   <label for="profile-image" class="btn btn-default profile-btn">
                     <span class="glyphicon glyphicon-pencil"></span>
                     <input type="file" id="profile-image" name="profile-image" style="display:none;">
@@ -313,7 +320,6 @@ $region_result = $region_statement->get_result();
                 <span id="image-errors" class="help-block"></span>
                 
               </div>
-              
               <?php 
                 // $username = $userdata["username"];
                 if($errors["username"]){
@@ -369,7 +375,7 @@ $region_result = $region_statement->get_result();
               <?php 
                 //$firstname = $userdata["firstname"]
                 
-              ?>
+                ?>
               <label for="first-name">First Name</label>
               <input type="text" class="form-control" id="first-name" name="firstname" placeholder="First Name" value="<?php echo $firstname; ?>">
             </div>
@@ -427,25 +433,25 @@ $region_result = $region_statement->get_result();
                 <div class="form-group">
                   <label for="state">State</label>
                   <!--<input  type="text" class="form-control" id="state" name="state" placeholder="New South Wales" value="<?php echo $state; ?>">-->
-                  <select name="state" class="form-control" id="state" placeholder="State or province">
-                      <?php
-                        //<option value="default-state">Default</option>
-                        if($region_result->num_rows > 0) {
-                            while($region = $region_result->fetch_assoc()) {
-                                $id = $region["sub_id"];
-                                $code = $region["sub_region_code"];
-                                $country_code = $region["country_code"];
-                                $name = $region["sub_region_name"];
-                                if($code == $state) {
-                                    $selected = "selected";
-                                }
-                                else {
-                                    $selected = "";
-                                }
-                                echo "<option $selected value=\"$code\"></option>";
-                            }
+                  <select name="state" class="form-control" id="state" placeholder="state or province">
+                    <?php
+                    // <option value="default-state">Default</option>
+                    if($region_result->num_rows > 0){
+                      while($region = $region_result->fetch_assoc()){
+                        $id = $region["sub_id"];
+                        $code = $region["sub_region_code"];
+                        $country_code = $region["country_code"];
+                        $name = $region["sub_region_name"];
+                        if($code == $state){
+                          $selected = "selected";
                         }
-                      ?>
+                        else{
+                          $selected = "";
+                        }
+                        echo "<option $selected value=\"$code\">$name</option>";
+                      }
+                    }
+                    ?>
                   </select>
                 </div>
               </div>
@@ -481,15 +487,16 @@ $region_result = $region_statement->get_result();
             // if($errors["update"]){
             //   echo "<div class=\"alert alert-warning\">".$errors["update"]."</div>";
             // }
-            if($success["account"] &&  $success["details"]) {
-                $alert_type = "success";
-                $alert_message = "Update successful";
+            if($success["account"] && $success["details"]){
+              $alert_type = "success";
+              $alert_message = "Update successful";
             }
-            else {
-                $alert_type = "warning";
+            else{
+              $alert_type = "warning";
+              $alert_message = "Something went wrong";
             }
-            if(count($success) == 2) {
-                echo "<div class=\"alert alert-$alert_type alert-dismissible\" role=\"alert\">
+            if(count($success) == 2){
+              echo "<div class=\"alert alert-$alert_type alert-dismissible\" role=\"alert\">
                   <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">
                   <span aria-hidden=\"true\">&times;</span>
                   </button>
@@ -499,7 +506,7 @@ $region_result = $region_statement->get_result();
             ?>
           </div>
           <div class="col-md-6 text-right">
-            <button type="submit" class="btn btn-primary">
+            <button type="submit" id="update-btn" class="btn btn-primary">
               Update My Details
             </button>
           </div>

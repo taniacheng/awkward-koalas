@@ -25,7 +25,7 @@ include("includes/head.php");
     <div class="container">
       <div class="row">
         <div class="col-md-4 col-md-offset-4">
-          <form id="login-form" action="login.php" method="post">
+          <form id="login-form" action="login2.php" method="post">
             <h2>Login to your account</h2>
             <div class="form-group">
               <label for="user">Email Address or Username</label>
@@ -63,7 +63,12 @@ include("includes/head.php");
     <script>
       <?php
       $js_vars = new GetToVars($_GET);
-      echo $js_vars;
+      if( $js_vars ){
+        echo $js_vars;
+      }
+      else{
+        echo "productid=0";
+      }
       ?>
     </script>
     <script src="js/login.js"></script>

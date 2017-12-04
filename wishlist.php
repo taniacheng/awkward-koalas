@@ -4,7 +4,7 @@ include("autoloader.php");
 
 if(isset($_SESSION["id"]) == false){
   //if user is not logged in, redirect to login page
-  $login_page = "login.php";
+  $login_page = "login2.php";
   header( "location:".$login_page);
 }
 
@@ -31,7 +31,7 @@ else{
       <div class="row">
         <h2 class="col-md-12"><?php echo ucfirst($_SESSION["username"]) ."'s";?> WishList</h2>
       </div>
-      <div class="row flex-row">
+      <div class="row flex-row" data-name="wish-row">
       <?php
       if( count($items) > 0){
       $counter = 0;
@@ -50,8 +50,9 @@ else{
             echo "<div class=\"col-md-2 col-sm-3 col-xs-6\" data-wishlist-item=\"$id\">";
             echo "<h3 class=\"product-name\">$name</h3>";
             echo "<img class=\"img-responsive\" src=\"products_images/$image\">";
-            echo "<p class=\"price\">$price</p>";
+            echo "<h5 class=\"price\">$price</h5>";
             echo "<p class=\"wishlist-description\">$description</p>";
+            echo "<p><a href=\"product_detail.php?id=$id\">More details</a></p>";
             //button toolbar
             echo "<div class=\"btn-group\">
               <button class=\"btn btn-info\" name=\"delete\" value=\"delete\" data-id=\"$id\" data-list-id=\"$list_id\" data-user-id=\"$user_id\">

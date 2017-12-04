@@ -40,58 +40,58 @@ $product_detail = $products[0];
         <div class="col-md-6">
           <div id="product-detail-images" class="carousel slide" data-ride="carousel">
           <!-- Indicators -->
-          <ol class="carousel-indicators">
-            <?php
-            $counter = 0;
-            foreach($products as $item){
-              if($counter == 0){
-                $active = "class=\"active\"";
+            <ol class="carousel-indicators">
+              <?php
+              $counter = 0;
+              foreach($products as $item){
+                if($counter == 0){
+                  $active = "class=\"active\"";
+                }
+                else{
+                  $active = "";
+                }
+                echo "<li 
+                data-target=\"#product-detail-images\"
+                data-slide-to=\"$counter\" $active>
+                </li>";
+                $counter++;
               }
-              else{
-                $active = "";
-              }
-              echo "<li 
-              data-target=\"#product-detail-images\"
-              data-slide-to=\"$counter\" $active>
-              </li>";
-              $counter++;
-            }
-            ?>
-          </ol>
-        
-          <!-- Wrapper for slides -->
-          <div class="carousel-inner" role="listbox">
-            <?php
-            //output images as slides
-            $counter = 0;
-            foreach($products as $item){
-              $image = $item["image"];
-              if( $counter==0 ){
-                $slideactive = "active";
-              }
-              else{
-                $slideactive = "";
-              }
-              echo "<div class=\"item $slideactive\">
-              <img src=\"products/$image\">
-              </div>";
-              $counter++;
-            }
-            ?>
-          </div>
-        
-          <!-- Controls -->
-          <a class="left carousel-control" href="#product-detail-images" role="button" data-slide="prev">
-            <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-            <span class="sr-only">Previous</span>
-          </a>
-          <a class="right carousel-control" href="#product-detail-images" role="button" data-slide="next">
-            <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-            <span class="sr-only">Next</span>
-          </a>
-        </div>
+              ?>
+            </ol>
           
-        </div>
+            <!-- Wrapper for slides -->
+            <div class="carousel-inner" role="listbox">
+              <?php
+              //output images as slides
+              $counter = 0;
+              foreach($products as $item){
+                $image = $item["image"];
+                if( $counter==0 ){
+                  $slideactive = "active";
+                }
+                else{
+                  $slideactive = "";
+                }
+                echo "<div class=\"item $slideactive\">
+                <img src=\"products/$image\">
+                </div>";
+                $counter++;
+              }
+              ?>
+            </div><!--- end carousel-inner --->
+          
+            <!-- Controls -->
+            <a class="left carousel-control" href="#product-detail-images" role="button" data-slide="prev">
+              <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+              <span class="sr-only">Previous</span>
+            </a>
+            <a class="right carousel-control" href="#product-detail-images" role="button" data-slide="next">
+              <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+              <span class="sr-only">Next</span>
+            </a>
+          </div><!--- end carousel --->
+        </div><!--- end col-md-6 --->
+        
         <div class="col-md-6">
           <h3 class="product-name cap"><?php echo $product_detail["name"]; ?></h3>
           <p><?php echo $product_detail["description"]; ?></p>
@@ -99,10 +99,10 @@ $product_detail = $products[0];
             <form id="cart-form" class="form-inline" action="product_detail.php" method="post">
               <div class="form-group">
                 <label>Quantity</label>
-                <input class="form-control product-quantity" type="number" step="1" min="1" value="1">
+                <input class="form-control product-quantity" name="quantity" type="number" step="1" min="1" value="1">
               </div>
               <div class="form-group">
-                <button class="btn btn-info" type="submit" name="target" value="cart">
+                <button class="btn btn-info" type="submit" name="cart" value="cart" data-id="<?php echo $product_id; ?>">
                   <span class="glyphicon glyphicon-shopping-cart"></span>
                   Add to Cart
                 </button>
@@ -114,10 +114,11 @@ $product_detail = $products[0];
                 </button>
               </div>
             </form>
-        </div>
-      </div>
-    </div>
+        </div><!--- end col --->
+      </div><!--- end row --->
+    </div><!--- end container --->
     <script src="js/wishlist.js"></script>
+    <script src="js/shoppingcart.js"></script>
     <template id="spinner-template">
       <span class="spinner-container">
         <img class="spinner" src="graphics/spinner.png">
